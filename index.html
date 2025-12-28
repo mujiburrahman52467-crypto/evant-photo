@@ -1,1 +1,103 @@
 <!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Event Photo Generator</title>
+<style>
+  body {
+    font-family: 'Sutonny MJ', sans-serif;
+    text-align: center;
+    padding: 20px;
+    background-color: #f0f0f0;
+  }
+  canvas {
+    border: 1px solid #ccc;
+  }
+  input, button {
+    margin: 10px;
+    padding: 8px;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<h2>আমি আসছি, আপনি আসছেন তো?</h2>
+
+<input type="text" id="username" placeholder="আপনার নাম লিখুন" />
+<input type="file" id="userimage" accept="image/*" />
+<br>
+<button id="generate">Generate Image</button>
+<br>
+<canvas id="canvas" width="1080" height="1080"></canvas>
+<br>
+<a id="download" href="#" download="event-photo.png">Download Image</a>
+
+<script>
+// Load background image
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+const bg = new Image();
+bg.src = 'background.png'; // Ensure this file is uploaded
+
+bg.onload = () => {
+  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+};
+
+// Load Sutonny MJ font
+const font = new FontFace('Sutonny MJ', 'url(https://cdn.jsdelivr.net/gh/rikimaru2020/SutonnyMJ/SutonnyMJ-Regular.ttf)');
+font.load().then(function(loadedFont) {
+  document.fonts.add(loadedFont);
+});
+
+document.getElementById('generate').addEventListener('click', () => {
+  const username = document.getElementById('username').value.trim();
+  const file = document.getElementById('userimage').files[0];
+
+  if(!username || !file){
+    alert('নাম এবং ছবি দুটোই দিতে হবে');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = new Image();
+    img.src = e.target.result;
+    img.onload = function(){
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Draw background
+      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
+      // Draw user image in circle
+      const imgX = 415;
+      const imgY = 415;
+      const diameter = 245;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(imgX + diameter/2, imgY + diameter/2, diameter/2, 0, Math.PI * 2, true);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(img, imgX, imgY, diameter, diameter);
+      ctx.restore();
+
+      // Draw name
+      ctx.fillStyle = '#EA332F';
+      ctx.font = '15px "Sutonny MJ"';
+      ctx.textAlign = 'center';
+      ctx.fillText(username, 565, 692);
+    };
+  };
+  reader.readAsDataURL(file);
+});
+
+// Download image
+document.getElementById('download').addEventListener('click', () => {
+  const link = document.getElementById('download');
+  link.href = canvas.toDataURL('image/png');
+});
+</script>
+
+</body>
+</html>
