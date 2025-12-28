@@ -46,7 +46,7 @@ const ctx = canvas.getContext('2d');
 const bg = new Image();
 bg.src = 'background.png.png'; 
 
-bg.onload = () => {
+bg.onload = (Generate) => {
   drawInitial();
 };
 
