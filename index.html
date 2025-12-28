@@ -7,16 +7,24 @@
   body {
     font-family: 'Sutonny MJ', sans-serif;
     text-align: center;
-    padding: 20px;
+    padding: 10px;
     background-color: #f0f0f0;
   }
   canvas {
+    max-width: 100%;
+    height: auto;
     border: 1px solid #ccc;
   }
   input, button {
-    margin: 10px;
-    padding: 8px;
+    margin: 8px;
+    padding: 6px;
     font-size: 14px;
+    width: 80%;
+    max-width: 300px;
+  }
+  #download {
+    display: block;
+    margin-top: 10px;
   }
 </style>
 </head>
@@ -28,22 +36,24 @@
 <input type="file" id="userimage" accept="image/*" />
 <br>
 <button id="generate">Generate Image</button>
-<br>
 <canvas id="canvas" width="1080" height="1080"></canvas>
-<br>
 <a id="download" href="#" download="event-photo.png">Download Image</a>
 
 <script>
 // Load background image
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-
 const bg = new Image();
-bg.src = 'background.png'; // Ensure this file is uploaded
+bg.src = 'background.png'; 
 
 bg.onload = () => {
-  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+  drawInitial();
 };
+
+function drawInitial() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+}
 
 // Load Sutonny MJ font
 const font = new FontFace('Sutonny MJ', 'url(https://cdn.jsdelivr.net/gh/rikimaru2020/SutonnyMJ/SutonnyMJ-Regular.ttf)');
@@ -65,15 +75,15 @@ document.getElementById('generate').addEventListener('click', () => {
     const img = new Image();
     img.src = e.target.result;
     img.onload = function(){
-      // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // Draw background
-      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      drawInitial();
+
+      // Calculate scaling for responsiveness
+      const scale = canvas.width / 1080; // base design 1080x1080
 
       // Draw user image in circle
-      const imgX = 415;
-      const imgY = 415;
-      const diameter = 245;
+      const imgX = 415 * scale;
+      const imgY = 415 * scale;
+      const diameter = 245 * scale;
       ctx.save();
       ctx.beginPath();
       ctx.arc(imgX + diameter/2, imgY + diameter/2, diameter/2, 0, Math.PI * 2, true);
@@ -84,9 +94,9 @@ document.getElementById('generate').addEventListener('click', () => {
 
       // Draw name
       ctx.fillStyle = '#EA332F';
-      ctx.font = '15px "Sutonny MJ"';
+      ctx.font = ${15*scale}px "Sutonny MJ";
       ctx.textAlign = 'center';
-      ctx.fillText(username, 565, 692);
+      ctx.fillText(username, 565*scale, 692*scale);
     };
   };
   reader.readAsDataURL(file);
@@ -100,4 +110,4 @@ document.getElementById('download').addEventListener('click', () => {
 </script>
 
 </body>
-</html>
+</html
